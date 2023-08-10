@@ -1,0 +1,2048 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kılıç ve savaş</title>
+    <style>
+        button {
+            appearance: auto;
+            -webkit-writing-mode: horizontal-tb !important;
+            text-rendering: auto;
+            color: -internal-light-dark(black, white);
+            letter-spacing: normal;
+            word-spacing: normal;
+            text-transform: none;
+            text-indent: 0px;
+            text-shadow: none;
+            display: inline-block;
+            text-align: center;
+            align-items: flex-start;
+            cursor: default;
+            background-color: white;
+            box-sizing: border-box;
+            margin: 0em;
+            font: 400 13.3333px Arial;
+            padding: 0px;
+            border-width: 0px;
+            border-style: outset;
+            border-color: white;
+            border-image: initial;
+	    font-size: 27px;
+        }
+    </style>
+</head>
+<body style="text-align: center;">
+	<button onclick='HD()'>Maceradan emekli ol</button>
+	<br><br><br>
+	<button onclick='LF()'>Lord Haritasi</button>
+	<br>
+    <canvas style="border:2px solid black;" width="220px" height="220px" id="myCanvas"></canvas>
+    <br>
+	<div id="sayfa">
+		<div id="sure"></div>
+		<div id="konumid"></div>
+		<div id="YerSal"></div>
+		<br>
+		<div style="margin: auto; width: 300px;">
+		<button onclick="ilerle(0,'+',LN)"><img src="https://i.hizliresim.com/2vkr6ue.png" width="50px" height="50px" style="float: inherit; margin-bottom: 10px;"></button><br>
+		<button onclick="ilerle(1,'-',LN)"><img src="https://i.hizliresim.com/r13pm3z.png" width="50px" height="50px" style="float: left;margin-right: 10px;"></button>
+		<button onclick="ilerle(1,'+',LN)"><img src="https://i.hizliresim.com/10oky7z.png" width="50px" height="50px" style="float: right;margin-left: 10px;"></button><br>
+		<button onclick="ilerle(0,'-',LN)"><img src="https://i.hizliresim.com/5cdle00.png" width="50px" height="50px" style="float: inherit;margin-top: 10px;"></button>
+		</div>
+		<br><br>
+		<div style="margin: auto; height: 150px; width: 730px;">
+			<div id="konumicerikid" style="float: left; margin-left: 15px;">x</div>
+			<div id="birlikid" style="float: left; margin-left: 15px;">x</div>
+			<div id="birlikler" style="float: left; margin-left: 15px;">x</div>
+		</div>
+	</div>
+	<div id="sayfa1"></div>
+    <script>
+//[]()
+
+//baslangic
+var Bsinir = 5 , B = false , alerta = false , zamann = true
+var L , H , RK , R , D
+L = JSON.parse(localStorage.getItem("KVSL"))
+H = JSON.parse(localStorage.getItem("KVSH"))
+RK = JSON.parse(localStorage.getItem("KVSRK"))
+R = JSON.parse(localStorage.getItem("KVSR"))
+D = JSON.parse(localStorage.getItem("KVSD"))
+
+var LN = eval(localStorage.getItem("KVSP"))
+
+if(L == null){
+    L = [
+		{
+			"konum":[Bsinir + 1,Bsinir + 1],
+			"birlik":[],
+			"topr":[],
+			"para":0,
+			"sinir":0,
+			"ulke":2,
+			"ad":"Anarsist Kral",
+			"yas":[0,99999999999999],
+			"B":false,
+			"kral":0
+		}
+	]
+    localStorage.setItem("KVSL",JSON.stringify(L))
+}
+
+if(LN == null){
+	LN = L.length//koray
+    L[LN] = {
+		"konum":[-4,-4],
+		"birlik":[],
+		"topr":[[-4,-4]],
+		"para":0,
+		"sinir":33,
+		"ulke":1,
+		"ad":"sen",
+		"yas":yas(),
+		"B":false,
+		"kral":LN
+	}
+    localStorage.setItem("KVSP",LN)
+	localStorage.setItem("KVSL",JSON.stringify(L))
+}
+
+if(H == null){
+    H = {
+		"4,4":{
+            "sinir":34,
+            "ad":"Olum Vadisi",
+            "nufuz":[{"can":100,"X":"male"},{"can":100,"X":"famale"}],
+            "ulke":3,
+			"birlikler":[],
+			"lord":"yok"
+        },
+		"-4,-4":{
+            "sinir":34,
+            "ad":"Falan Filan",
+            "nufuz":[{"can":100,"X":"male"},{"can":100,"X":"famale"}],
+            "ulke":1,
+			"birlikler":[LN],
+			"lord":LN
+        }
+	}
+    localStorage.setItem("KVSH",JSON.stringify(H))
+}
+
+if(RK == null){
+    RK = [[4,4],[-4,-4]]
+    localStorage.setItem("KVSRK",JSON.stringify(RK))
+}
+
+if(R == null){
+	R = [["white","sahipsiz"],["blue","sen ulke",[1],1],["white","Anarsistler",[0],0],["red","Haydutlar",[],"yok"]]
+    localStorage.setItem("KVSR",JSON.stringify(R))
+}
+
+if(D == null){
+	D = {
+		"kisi":[],
+		"sure":0,
+		"bas":{
+			"L":0,
+			"R":1
+		},
+		"tarih":{
+			"hersey":["sen ulke(1) 'dan kral sen(1) , Falan Filan(-4,-4) 'a yerlesti (00:00)"],
+			"kisi":[
+				[],
+				["sen ulke(1) 'da kral Falan Filan(-4,-4) 'a yerlesti (00:00)"],
+				[]
+			],
+			"ulke":[
+				[],
+				["kral sen(1) Falan Filan(-4,-4) 'a yerlesti (00:00)"],
+				[],
+				[]
+			],
+			"yerlesim":{
+				"4,4":[],
+				"-4,-4":["sen ulke(1) 'dan kral sen(1) yerlesti (00:00)"]
+			}
+		}
+	}
+    localStorage.setItem("KVSD",JSON.stringify(D))
+}
+
+//alert
+function alerte(X1){
+	if(alerta){
+		alert(X1)
+	}else {
+		console.log(X1)
+	}
+}
+//[]()
+//zaman
+function zaman(X1){
+	if(zamann){
+		switch(X1) {
+			case "ureme":
+				return 45000
+			break;
+			case "vergi":
+				return 47000
+			break;
+			case "yas":
+				return 40000
+			break;
+			case "yeni lord":
+				return 2300
+			break;
+			case "ulkeler":
+				return 2900
+			break;
+			case "yeni taht talibi":
+				return 4000
+			break;
+			case "yeni kral":
+				return 9000
+			break;
+			case "yapay zeka":
+				return 17000
+			break;
+			case "sure":
+				return 1000
+			break;
+			case "D":
+				return 20000
+			break;
+		}
+	}else {
+		switch(X1) {
+			case "ureme":
+				return 4500
+			break;
+			case "vergi":
+				return 4700
+			break;
+			case "yas":
+				return 4000
+			break;
+			case "yeni lord":
+				return 2300
+			break;
+			case "ulkeler":
+				return 2900
+			break;
+			case "yeni taht talibi":
+				return 4000
+			break;
+			case "yeni kral":
+				return 9000
+			break;
+			case "yapay zeka":
+				return 2000
+			break;
+			case "sure":
+				return 1000
+			break;
+			case "D":
+				return 20000
+			break;
+		}
+	}
+}
+
+//yas
+function yas(){
+	return [0,[25,35,45,55,66][Math.floor(Math.random() * 5)]]
+}
+
+//canvas
+function Canvas(X2,X1,X3){
+    var canvas = document.getElementById('myCanvas');
+    var cizim = canvas.getContext('2d');
+    
+    X2 = X2 - (X2 + X2)
+    
+    X1 = X1 + Bsinir
+    X2 = X2 + Bsinir
+    G1 = (Bsinir * 4)//6.15 = 4 | 4 = 5 | 74 = 1
+    X1 = X1 * G1
+    X2 = X2 * G1
+    cizim.beginPath();
+    cizim.rect(X1, X2, G1, G1);
+    cizim.fillStyle = X3;
+    cizim.fill();
+}
+function renkkayit(){
+    F2 = 0
+    
+    while(!(RK.length == F2)){
+        Canvas(RK[F2][0],RK[F2][1],JSON.parse(localStorage.getItem("KVSR"))[JSON.parse(localStorage.getItem("KVSH"))[RK[F2]]["ulke"]][0])
+        F2++
+    }
+	Canvas(L[LN]["konum"][0],L[LN]["konum"][1],"green")
+}
+function renkkayitAL(X1){
+    RK[RK.length] = [...L[X1]["konum"]]
+    localStorage.setItem("KVSRK",JSON.stringify(RK))
+}
+
+//lord filtre
+function LF(){
+    Canvas(L[LN]["konum"][0],L[LN]["konum"][1],"white")
+    D2 = 0
+    
+    while(!(RK.length == D2)){
+		if(H[RK[D2]]["ulke"] == L[LN]["ulke"]){
+			if(H[RK[D2]]["lord"] == "yok"){
+				Canvas(RK[D2][0],RK[D2][1],"grey")
+			}else {
+				if(H[RK[D2]]["lord"] == LN){
+					Canvas(RK[D2][0],RK[D2][1],"green")
+				}else if(L[H[RK[D2]]["lord"]]["kral"] == L[LN]["kral"]){
+					Canvas(RK[D2][0],RK[D2][1],"blue")
+				}else {
+					Canvas(RK[D2][0],RK[D2][1],"#FA3939")
+				}
+			}
+		}else {
+			Canvas(RK[D2][0],RK[D2][1],"red")
+		}
+        D2++
+    }
+	setTimeout(function(){ renkkayit() }, 2900);
+}
+
+//ilerle
+function ilerle(X1,X2,X3){
+	if(X2 == "-"){
+		//console.log(X1+"   "+X2+"   "+X3)
+		if(L[X3]["konum"][X1] == (Bsinir - (Bsinir + Bsinir))){return console.log("sinira ulastin "+X3)}
+	}else {
+		//console.log(X1+"   "+X2+"   "+X3)
+		if(L[X3]["konum"][X1] == Bsinir){return console.log("sinira ulastin "+X3)}
+	}
+	H[L[X3]["konum"]]["birlikler"] = AS3(H[L[X3]["konum"]]["birlikler"],X3)
+	if(!(H[L[X3]["konum"]]["birlikler"].includes(LN))){
+		Canvas(L[X3]["konum"][0],L[X3]["konum"][1],R[H[L[X3]["konum"]]["ulke"]][0])
+    }
+	eval("L["+X3+"]['konum']["+X1+"] = L["+X3+"]['konum'][" + X1 + "]"+X2+"1");
+    if(X3 == LN){
+		Canvas(L[X3]["konum"][0],L[X3]["konum"][1],"green")
+	}
+	localStorage.setItem("KVSL",JSON.stringify(L))
+    kesif(X3)
+}
+
+//sahiplen
+function sahiplen(X1){
+	if(H[L[X1]["konum"]]["lord"] == "yok" && H[L[X1]["konum"]]["ulke"] == L[X1]["ulke"]){
+		H[L[X1]["konum"]]["lord"] = X1
+		L[X1]["topr"][L[X1]["topr"].length] = [...L[X1]["konum"]]
+		console.log(L[X1]["ad"]+"("+X1+") "+H[L[X1]["konum"]]["ad"]+"("+L[X1]["konum"]+") bolgesini sahiplendi")
+		localStorage.setItem("KVSL",JSON.stringify(L))
+		localStorage.setItem("KVSH",JSON.stringify(H))
+		kesif(LN)
+		birlikY()
+	}
+}
+
+//kesif
+function RF2(X1,X2){
+	F3 = 0
+	F4 = ""
+	
+	while(X1.length != F3){
+		F5 = CB(L[X1[F3]]["birlik"])
+		F4 += "<font color='"+R[L[X1[F3]]["ulke"]][0]+"'>"+L[X1[F3]]["ad"]+"("+X1[F3]+")</font> "
+		F4 += L[X1[F3]]["birlik"].length+"/"+L[X1[F3]]["sinir"]+"(>"+F5["male"]+")(+?"+F5["famale"]+")"
+		if(L[X1[F3]]["kral"] != L[LN]["kral"]){
+			F4 += "    <button onclick='saldir1(LN,"+X1[F3]+")'>saldir</button>    <button onclick='yemin(LN,"+X1[F3]+")'>yemin</button>"
+		}
+		F4 += "<br>"
+		F4 += "<font color='"+R[L[X1[F3]]["ulke"]][0]+"'>"+R[L[X1[F3]]["ulke"]][1]+"("+L[X1[F3]]["ulke"]+")</font>"
+		if(L[L[X1[F3]]["kral"]] == "yok"){
+			L[X1[F3]]["kral"] = "yok"
+		}
+		if(L[X1[F3]]["kral"] == "yok"){
+			F4 += "<br>krali = yok"
+		}else {
+			F4 += "<br>krali = <font color='"+R[L[L[X1[F3]]["kral"]]["ulke"]][0]+"'>"+L[L[X1[F3]]["kral"]]["ad"]+"("+L[X1[F3]]["kral"]+")</font>"
+		}
+		F4 += "<br><br>"
+		F3++
+	}
+	return F4
+}
+function kesif(X1){
+    if(H[L[X1]["konum"]] == null || H[L[X1]["konum"]] == undefined){
+        H[L[X1]["konum"]] = {
+            "sinir":0,
+            "ad":"yok",
+            "nufuz":[],
+            "ulke":0,
+			"birlikler":[],
+			"lord":"yok"
+        }
+    }
+	if(!(H[L[X1]["konum"]]["birlikler"].includes(X1))){
+		H[L[X1]["konum"]]["birlikler"][H[L[X1]["konum"]]["birlikler"].length] = X1
+	}
+    localStorage.setItem("KVSH",JSON.stringify(H))
+	if(X1 == LN){
+		document.querySelector('#sayfa').style = "display: block;"
+		document.querySelector('#sayfa1').innerHTML = ""
+		D3 = CB(H[L[LN]["konum"]]["nufuz"])
+		if(!(L[LN]["B"])){
+			document.querySelector('#konumid').innerHTML = "konum = " + L[LN]["konum"]
+			D4 = ""
+			D4 += "ad = "+H[L[LN]["konum"]]["ad"]
+			D4 += "<br>ulke = <font color='"+R[H[L[LN]["konum"]]["ulke"]][0]+"'>"+R[H[L[LN]["konum"]]["ulke"]][1]+"("+H[L[LN]["konum"]]["ulke"]+")</font>"
+			D4 += "<br>nufuz = "+H[L[LN]["konum"]]["nufuz"].length+"/"+H[L[LN]["konum"]]["sinir"]+"(>"+D3["famale"]+")"+"(+?"+D3["male"]+")"
+			if(H[L[LN]["konum"]]["lord"] == "yok"){
+				D4 += "<br>lord = yok"
+			}else {
+				if(L[H[L[LN]["konum"]]["lord"]] == "yok"){
+					H[L[LN]["konum"]]["lord"] = "yok"
+					D4 += "<br>lord = yok"
+				}else {
+					D4 += "<br>lord = <font color='"+R[L[H[L[LN]["konum"]]["lord"]]["ulke"]][0]+"'>"+L[H[L[LN]["konum"]]["lord"]]["ad"]+"("+H[L[LN]["konum"]]["lord"]+")</font>"
+				}
+			}
+			
+			document.querySelector('#konumicerikid').innerHTML = D4
+			
+			document.querySelector('#birlikler').innerHTML = RF2(H[L[LN]["konum"]]["birlikler"],L[LN]["konum"])
+			
+			if(H[L[LN]["konum"]]["nufuz"].length == 0){
+				document.querySelector('#YerSal').innerHTML = "<button onclick='yerles(LN)'>yerles</button><br><br><br>"
+			}else if(H[L[LN]["konum"]]["nufuz"].length > 0){
+				if(H[L[LN]["konum"]]["ulke"] == L[LN]["ulke"]){
+					if(H[L[LN]["konum"]]["lord"] == "yok"){
+						if(R[L[LN]["ulke"]][3] == "yok"){
+							document.querySelector('#YerSal').innerHTML = "<button onclick='sahiplen(LN)'>sahiplen</button><br><br><br>"
+						}else {
+							if(R[L[LN]["ulke"]][3] == LN){
+								document.querySelector('#YerSal').innerHTML = "<button onclick='sahiplen(LN)'>sahiplen</button><br><button onclick=\"H[L[LN]['konum']]['lord'] = LN;LS(LN)\">Lord Sal</button><br><br>"
+							}else {
+								document.querySelector('#YerSal').innerHTML = "<button onclick='birlikAl(LN)'>birlik al</button>"
+							}
+						}
+						//[]()
+					}else {
+						if(L[LN]["kral"] == L[H[L[LN]["konum"]]["lord"]]["kral"]){
+							document.querySelector('#YerSal').innerHTML = "<button onclick='birlikAl(LN)'>birlik al</button><div id='G'></div><div id='LS'></div>"
+							if(H[L[LN]["konum"]]["lord"] == LN){
+								document.querySelector('#G').innerHTML = "<button onclick='G(LN)'>Sinir Gelistir</button>"
+								if(L[LN]["topr"].length > 1 && L[LN]["kral"] == LN){
+									document.querySelector('#LS').innerHTML = "<button onclick='LS(LN)'>Lord Sal</button>"
+								}else {
+									document.querySelector('#LS').innerHTML = "<br>"
+								}
+							}else {
+								document.querySelector('#G').innerHTML = "<br>"
+								document.querySelector('#LS').innerHTML = "<br>"
+							}
+						}else {
+							document.querySelector('#YerSal').innerHTML = "<br><br><br>"
+						}
+					}
+				}else {
+					document.querySelector('#YerSal').innerHTML = "<button onclick='saldir(LN)'>saldir</button><br><br><br>"
+				}
+			}
+		}else {
+			document.querySelector('#sayfa').style = "display: none;"
+			document.querySelector('#sayfa1').innerHTML = "<h2>Tarafini belirle</h2><br><button onclick='kesifF2();kesif(LN);birlikY()'>Kiralliga devam et("+R[L[LN]["ulke"]][1]+")</button><br><br><br><button onclick='kesifF1();kesif(LN);birlikY()'>Bagimsiz ol</button>"
+		}
+	}
+}
+function kesifF1(){
+	R[L[LN]['ulke']][2] = AS3(R[L[LN]['ulke']][2],LN);
+	L[LN]['ulke'] = R.length;
+	L[LN]['kral'] = LN;
+	H[L[LN]['topr'][0]]['ulke'] = R.length;
+	R[R.length] = [RB(),UAB([L[LN]['ad'],H[L[LN]['konum']]['ad']]),[LN],LN];
+	D["tarih"]["ulke"][R.length - 1] = []
+	L[LN]['B'] = false;
+	localStorage.setItem('KVSL',JSON.stringify(L));
+	localStorage.setItem('KVSH',JSON.stringify(H));
+	localStorage.setItem('KVSR',JSON.stringify(R));
+}
+function kesifF2(){
+	L[LN]['B'] = false;
+	localStorage.setItem('KVSL',JSON.stringify(L));
+}
+
+//Gelistir
+function G(X1){
+	if(L[X1]["para"] < 1000){return alert("1000 para lazim")}
+	if(H[L[X1]["konum"]]["sinir"] > 100){return alert("siniri en fazla bu kadar arttirabilirsiniz")}
+	if(L[X1]["ulke"] != H[L[X1]["konum"]]["ulke"] || H[L[X1]["konum"]]["lord"] != X1){return alert("bolge senin degil")}
+	
+	L[X1]["para"] = L[X1]["para"] - 1000
+	H[L[X1]["konum"]]["sinir"] = H[L[X1]["konum"]]["sinir"] + 5
+	console.log(L[X1]["ad"]+"("+X1+") "+H[L[X1]["konum"]]["ad"]+"("+L[X1]["konum"]+") konumunu gelistirdi , sinir "+H[L[X1]["konum"]]["sinir"]+" oldu")
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	kesif(LN)
+	birlikY()
+}
+function GG(X1){
+	if(L[X1]["para"] < 1000){return alert("1000 para lazim")}
+	if(L[X1]["sinir"] > 100){return alert("siniri en fazla bu kadar arttirabilirsiniz")}
+	
+	L[X1]["para"] = L[X1]["para"] - 1000
+	L[X1]["sinir"] = L[X1]["sinir"] + 2
+	
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	birlikY()
+}
+
+//siyasi
+function yemin(X1,X2){
+	if(L[X1]["kral"] == X1){
+		G1 = 0
+		G3 = L[X1]["ulke"]
+		if(R[G3][3] == X1){
+			R[G3][3] = "yok"
+		}
+		while(R[G3][2].length != G1){
+			if(L[R[G3][2][G1]]["kral"] == X1){
+				alerte(L[R[G3][2][G1]]["ad"]+"("+R[G3][2][G1]+") , "+L[X2]["ad"]+"("+X2+") a baglanma yemini etti")
+				L[R[G3][2][G1]]["kral"] = L[X2]["kral"]
+				G2 = 0
+				while(L[R[G3][2][G1]]["topr"].length != G2){
+					H[L[R[G3][2][G1]]["topr"][G2]]["ulke"] = L[X2]["ulke"]
+					G2++
+				}
+				if(L[R[G3][2][G1]]["ulke"] != L[X2]["ulke"]){
+					L[R[G3][2][G1]]["ulke"] = L[X2]["ulke"]
+					R[L[X2]["ulke"]][2][R[L[X2]["ulke"]][2].length] = R[G3][2][G1]
+					R[G3][2] = AS3(R[G3][2],R[G3][2][G1])
+					G1--
+				}
+			}
+			G1++
+		}
+	}else {
+		alerte(L[X1]["ad"]+"("+X1+") , "+L[L[X2]["kral"]]["ad"]+"("+L[X2]["kral"]+") a baglanma yemini etti")
+		L[X1]["kral"] = L[X2]["kral"]
+		G2 = 0
+		while(!(L[X1]["topr"].length == G2)){
+			H[L[X1]["topr"][G2]]["ulke"] = L[X2]["ulke"]
+			G2++
+		}
+		if(L[X1]["ulke"] != L[X2]["ulke"]){
+			R[L[X1]["ulke"]][2] = AS3(R[L[X1]["ulke"]][2],X1)
+			R[L[X2]["ulke"]][2][R[L[X2]["ulke"]][2].length] = X1
+			L[X1]["ulke"] = L[X2]["ulke"]
+		}
+	}
+	
+	localStorage.setItem("KVSH",JSON.stringify(H))
+	localStorage.setItem("KVSR",JSON.stringify(R))
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	kesif(LN)
+	birlikY()
+	renkkayit()
+}
+function KS(X1){
+	alerte(L[X1]["ad"]+"("+X1+") , "+R[L[X1]["ulke"]][1]+"("+L[X1]["ulke"]+") tahtini talep etti")
+	L[X1]["kral"] = X1
+	
+	D1 = 0
+	D2 = []
+	while(R[L[X1]["ulke"]][2].length != D1){
+		if(L[R[L[X1]["ulke"]][2][D1]]["kral"] == "yok"){
+			D2[D2.length] = R[L[X1]["ulke"]][2][D1]
+		}
+		D1++
+	}
+	
+	if(D2.includes(LN)){
+		D2 = AS3(D2,LN)
+	}
+	
+	D1 = 0
+	while(D2.length != D1){
+		if([true,false][Math.floor(Math.random() * 2)]){
+			yemin(D2[D1],X1)
+		}
+		D1++
+	}
+	
+	localStorage.setItem("KVSH",JSON.stringify(H))
+	localStorage.setItem("KVSR",JSON.stringify(R))
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	kesif(LN)
+	birlikY()
+}
+function LS(X1){
+	if(L[X1]["kral"] != X1){return alert("lord salmak icin kral olman lazim")}
+	if(H[L[X1]["konum"]]["lord"] != X1){return alert(H[L[X1]["konum"]]["ad"]+"("+L[X1]["konum"]+") senin topragin degil")}
+	
+	L[X1]["topr"] = AS2(L[X1]["topr"],L[X1]["konum"])
+	
+	L[L.length] = {
+		"konum":[...L[X1]["konum"]],
+		"birlik":[],
+		"topr":[[...L[X1]["konum"]]],
+		"para":0,
+		"sinir":30+Math.floor(H[L[X1]["konum"]]["sinir"]/10),
+		"ulke":L[X1]["ulke"],
+		"ad":KAB(H[L[X1]["konum"]]["ad"]),
+		"yas":yas(),
+		"B":false,
+		"kral":X1
+	}
+	H[L[X1]["konum"]]["birlikler"][H[L[X1]["konum"]]["birlikler"].length] = L.length-1
+	H[L[X1]["konum"]]["lord"] = L.length-1
+	R[L[X1]["ulke"]][2][R[L[X1]["ulke"]][2].length] = L.length-1
+	D["tarih"]["kisi"][L.length - 1] = []
+	
+	console.log(H[L[L.length-1]["konum"]]["ad"]+"("+L[L.length-1]["konum"]+") konumumunda "+R[L[L.length-1]["ulke"]][1]+"("+L[L.length-1]["ulke"]+") sini benimsemis "+L[L.length-1]["ad"]+"("+(L.length - 1)+") adli bir lord "+L[X1]["ad"]+"("+(X1)+") tarafindan cikartildi")
+	
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	localStorage.setItem("KVSH",JSON.stringify(H))
+	localStorage.setItem("KVSR",JSON.stringify(R))
+	kesif(LN)
+	birlikY()
+}
+
+//cinsiyet bul
+function CB(X1){
+	G1 = 0
+	G2 = 0
+	G3 = {
+		"famale":0,
+		"male":0,
+		"cift":0
+	}
+	while(G1 != X1.length){
+		if(X1[G1]["X"] == "famale"){G3["famale"]++}
+		if(X1[G1]["X"] == "male"){G3["male"]++}
+		G1++
+	}
+	G4 = {
+		"famale":G3["famale"],
+		"male":G3["male"]
+	}
+	/*if(G3["famale"] > G3["male"]){
+		G3["cift"] = G3["male"]
+	}else if(G3["male"] > G3["famale"]){
+		G3["cift"] = G3["famale"]
+	}else if(G3["male"] == G3["famale"]){
+		G3["cift"] = G3["male"]
+	}*/
+	while(!(G4["famale"] == 0 || G4["male"] == 0)){
+		G4["famale"]--
+		G4["male"]--
+		G3["cift"]++
+	}
+	
+	return G3
+}
+
+//Sureyi kisalt
+function SK(){
+	D1 = {
+		"yil":0,
+		"gun":0,
+		"saat":0,
+		"dakika":0,
+		"saniye":D["sure"]
+	}
+	while(D1["saniye"] > 59){
+		D1["dakika"]++
+		D1["saniye"] -= 60
+	}
+	while(D1["dakika"] > 59){
+		D1["saat"]++
+		D1["dakika"] -= 60
+	}
+	while(D1["saat"] > 23){
+		D1["gun"]++
+		D1["saat"] -= 24
+	}
+	while(D1["gun"] > 364){
+		D1["yil"]++
+		D1["gun"] -= 365
+	}
+	D2 = ""
+	if(D1["yil"] > 0){
+		D2 += D1["yil"]+":"
+	}
+	if(D1["gun"] > 0){
+		if(D1["gun"] < 100){
+			D2 += "00"+D1["gun"]+":"
+		}else {
+			if(D1["gun"] < 10){
+				D2 += "0"+D1["gun"]+":"
+			}else {
+				D2 += D1["gun"]+":"
+			}
+		}
+	}
+	if(D1["saat"] > 0){
+		if(D1["saat"] < 10){
+			D2 += "0"+D1["saat"]+":"
+		}else {
+			D2 += D1["saat"]+":"
+		}
+	}
+	if(D1["dakika"] < 10){
+		D2 += "0"+D1["dakika"]+":"
+	}else {
+		D2 += D1["dakika"]+":"
+	}
+	if(D1["saniye"] < 10){
+		D2 += "0"+D1["saniye"]
+	}else {
+		D2 += D1["saniye"]
+	}
+	return D2
+}
+
+//bu adam hayirdir
+function BAH(X1){
+	G1 = ""
+	
+	if(L[X1]["kral"] == "yok"){
+		G1 += "tarafsiz"
+	}else {
+		if(L[X1]["kral"] == X1){
+			if(R[L[X1]["ulke"]][3] == X1){
+				G1 += "kral"
+			}else {
+				G1 += "taht talibi"
+			}
+		}else {
+			G1 += L[L[X1]["kral"]]["ad"]+"("+L[X1]["kral"]+")"
+		}
+	}
+	
+	return G1
+}
+
+//lord varmi yokla
+function LVY(){
+    G2 = 0
+    
+    while(RK.length != G2){
+        if(H[RK[G2]]["lord"] == "yok"){
+			return false
+		}
+        G2++
+    }
+	
+	return true
+}
+function LVY1(X1){
+    G1 = 0
+    
+    while(RK.length != G1){
+        if(H[RK[G1]]["ulke"] == X1 && H[RK[G1]]["lord"] == "yok"){
+			return false
+		}
+        G1++
+    }
+	return true
+}
+function LVY2(){
+    if(R[L[H2[H1]]["ulke"]][3] == H2[H1]){
+		if(LVY1(L[H2[H1]]["ulke"])){
+			return false
+		}else {
+			return true
+		}
+	}
+	return true
+}
+
+//etrafi kolla
+function EK(X1){
+	G1 = []
+	if(X1[0] != Bsinir){
+		G1[0] = [X1[0] + 1,X1[1]]
+	}
+	if(X1[0] != (Bsinir - (Bsinir + Bsinir))){
+		G1[1] = [X1[0] - 1,X1[1]]
+	}
+	if(X1[1] != (Bsinir - (Bsinir + Bsinir))){
+		G1[2] = [X1[0],X1[1] - 1]
+	}
+	if(X1[1] != Bsinir){
+		G1[3] = [X1[0],X1[1] + 1]
+	}
+	return G1
+}
+
+//ureme
+/*function ureme(){
+    C2 = 0
+	
+    while(!(RK.length == C2)){
+        if(!(H[RK[C2]]["sinir"] == H[RK[C2]]["nufuz"].length) || H[RK[C2]]["sinir"] > H[RK[C2]]["nufuz"].length){
+			ureme1(RK[C2])
+		}else {
+			console.log(H[RK[C2]]["ad"]+"("+RK[C2]+") = nufuz sinira ulasti")
+		}
+        C2++
+    }
+	//console.log("|")
+}*/
+function returnF2(){
+    if(D2["famale"] > D2["male"]){
+		D2["male"]++
+		return "male"
+	}
+	if(D2["male"] > D2["famale"]){
+		D2["famale"]++
+		return "famale"
+	}
+	if(D2["famale"] == D2["male"]){
+		if([true,false][Math.floor(Math.random() * 2)]){
+			D2["famale"]++
+			return "famale"
+		}else {
+			D2["male"]++
+			return "male"
+		}
+	}
+}
+function ureme1(X1){
+	D2 = CB(H[X1]["nufuz"])
+    D3 = 0
+	
+    while(D2["cift"] > 0){
+        if(H[X1]["nufuz"][D3] == null){
+            H[X1]["nufuz"][D3] = {"can":100,"X":returnF2()}
+            D2["cift"] = D2["cift"] - 1
+        }
+		if(H[X1]["nufuz"].length == H[X1]["sinir"] || H[X1]["nufuz"].length > H[X1]["sinir"]){
+			kesif(LN)
+			return B1[B1.length] = H[X1]["ad"]+"("+X1+") = nufuz sinira ulasti ("+H[X1]["nufuz"].length+")"
+		}
+		D3++
+    }
+    kesif(LN)
+    return B1[B1.length] = H[X1]["ad"]+"("+X1+") = ureme fonksiyonu basarili ("+H[X1]["nufuz"].length+")"
+}
+
+//birlik
+function birlikY(){
+    D3 = CB(L[LN]["birlik"])
+	D4 = 0
+	D5 = 0
+	while(L[LN]["topr"].length != D5){
+		if(L[LN]["kral"] != LN && L[LN]["kral"] != "yok"){
+			D4 += (H[L[LN]["topr"][D5]]["nufuz"].length * 2)/4 + (H[L[LN]["topr"][D5]]["nufuz"].length * 2)/2
+		}else {
+			D4 += H[L[LN]["topr"][D5]]["nufuz"].length * 2
+		}
+		D5++
+	}
+	D4 -= L[LN]["birlik"].length * 2
+	if(D4 > 0){
+		D4 = "Para = "+Math.floor(L[LN]["para"])+"(+"+D4+")"
+	}else {
+		D4 = "Para = "+Math.floor(L[LN]["para"])+"("+D4+")"
+	}
+	D4 += "<br>birlik = "+L[LN]["birlik"].length+"/"+L[LN]["sinir"]+ "(>"+D3["male"]+")"+"(+?"+D3["famale"]+")"
+	D4 += "<br>ad = <font color='"+R[L[LN]["ulke"]][0]+"'>"+L[LN]["ad"]+"("+LN+")</font>"
+	D4 += "<br>ulke = <font color='"+R[L[LN]["ulke"]][0]+"'>"+R[L[LN]["ulke"]][1]+"("+L[LN]["ulke"]+")</font>"
+	D4 += "<br>yas = "+L[LN]["yas"][0]+"/"+L[LN]["yas"][1]
+	if(L[LN]["kral"] == "yok"){
+		D4 += "<br>kral = yok"
+	}else {
+		D4 += "<br>kral = <font color='"+R[L[L[LN]["kral"]]["ulke"]][0]+"'>"+L[L[LN]["kral"]]["ad"]+"("+L[LN]["kral"]+")</font>"
+	}
+	D4 += "<br><button onclick='GG(LN)'><font color='red'>Sinir Gelistir</font></button>"
+	if(L[LN]["kral"] != LN){
+		D4 += "<br><button onclick='KS(LN)'><font color='red'>Tahti talep et</font></button>"
+	}
+    document.querySelector('#birlikid').innerHTML = D4
+	document.querySelector('#birlikler').innerHTML = RF2(H[L[LN]["konum"]]["birlikler"])
+}
+function birlikAl(X1){
+	
+	D3 = CB(H[L[X1]["konum"]]["nufuz"])
+	
+	if(H[L[X1]["konum"]]["ulke"] != L[X1]["ulke"]){return alert("yerlesimle ayni ulkede değilsin")}
+	if(!(L[X1]["para"] > 19)){return alert("20 para lazim")}
+	if(!(D3["cift"] > 1)){return alert("yerlesimde yeterli nufuz yok")}
+	if(!(L[X1]["sinir"] > L[X1]["birlik"].length)){return alert("birlik sinirin dolu")}
+	
+	D1 = 0
+	D2 = {"male":[],"famale":[]}
+	while(H[L[X1]["konum"]]["nufuz"].length != D1){
+		if(H[L[X1]["konum"]]["nufuz"][D1]["X"] == "male"){
+			D2["male"][D2["male"].length] = D1
+		}else if(H[L[X1]["konum"]]["nufuz"][D1]["X"] == "famale"){
+			D2["famale"][D2["famale"].length] = D1
+		}
+		D1++
+	}
+	
+	D2["male1"] = D2["male"][Math.floor(Math.random() * D2["male"].length)]
+	D2["famale1"] = D2["famale"][Math.floor(Math.random() * D2["famale"].length)]
+	L[X1]["birlik"][L[X1]["birlik"].length] = H[L[X1]["konum"]]["nufuz"][D2["male1"]]
+	L[X1]["birlik"][L[X1]["birlik"].length] = H[L[X1]["konum"]]["nufuz"][D2["famale1"]]
+	if(D2["male1"] > D2["famale1"]){
+		H[L[X1]["konum"]]["nufuz"] = AS1(H[L[X1]["konum"]]["nufuz"],D2["male1"])
+		H[L[X1]["konum"]]["nufuz"] = AS1(H[L[X1]["konum"]]["nufuz"],D2["famale1"])
+	}else if(D2["male1"] < D2["famale1"]){
+		H[L[X1]["konum"]]["nufuz"] = AS1(H[L[X1]["konum"]]["nufuz"],D2["famale1"])
+		H[L[X1]["konum"]]["nufuz"] = AS1(H[L[X1]["konum"]]["nufuz"],D2["male1"])
+	}
+	L[X1]["para"] = L[X1]["para"] - 20
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	localStorage.setItem("KVSH",JSON.stringify(H))
+	kesif(LN)
+	birlikY()
+}
+
+//yerles
+function yerlesR(X1){
+    if(H[L[X1]["konum"]]["sinir"] == 0){
+		return 34
+	}
+	return H[L[X1]["konum"]]["sinir"]
+}
+function yerles(X1){
+    if(L[X1]["birlik"].length == 0){return alert("birlik yok")}
+	D2 = CB(L[X1]["birlik"])
+	if(D2["cift"] == 0){return alert("yerlesmek için 2 cinsiyetende 1 birey gerek")}
+	
+	D1 = 0
+	D2 = {"male":[],"famale":[]}
+	while(L[X1]["birlik"].length != D1){
+		if(L[X1]["birlik"][D1]["X"] == "male"){
+			D2["male"][D2["male"].length] = D1
+		}else if(L[X1]["birlik"][D1]["X"] == "famale"){
+			D2["famale"][D2["famale"].length] = D1
+		}
+		D1++
+	}
+	
+	D2["male1"] = D2["male"][Math.floor(Math.random() * D2["male"].length)]
+	D2["famale1"] = D2["famale"][Math.floor(Math.random() * D2["famale"].length)]
+	
+	D2["male2"] = L[X1]["birlik"][D2["male1"]]["can"]
+	D2["famale2"] = L[X1]["birlik"][D2["famale1"]]["can"]
+	
+	if(D2["male1"] > D2["famale1"]){
+		L[X1]["birlik"] = AS1(L[X1]["birlik"],D2["male1"])
+		L[X1]["birlik"] = AS1(L[X1]["birlik"],D2["famale1"])
+	}else if(D2["male1"] < D2["famale1"]){
+		L[X1]["birlik"] = AS1(L[X1]["birlik"],D2["famale1"])
+		L[X1]["birlik"] = AS1(L[X1]["birlik"],D2["male1"])
+	}
+	
+	L[X1]["topr"][L[X1]["topr"].length] = [...L[X1]["konum"]]
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	
+	if(H[L[X1]["konum"]]["ad"] == "yok"){
+		H[L[X1]["konum"]]["ad"] = BAB(L[X1]["ad"])
+		D1 = true 
+	}else {
+		D1 = false
+	}
+	
+    H[L[X1]["konum"]] = {
+        "sinir":yerlesR(X1),
+        "ad":H[L[X1]["konum"]]["ad"],
+        "nufuz":[{"can":D2["male2"],"X":"male"},{"can":D2["famale2"],"X":"famale"}],
+        "ulke":L[X1]["ulke"],
+		"birlikler":H[L[X1]["konum"]]["birlikler"],
+		"lord":X1
+    }
+	if(D["tarih"]["kisi"][X1] == null){
+		D["tarih"]["kisi"][X1] = []
+	}
+	if(D1){
+		console.log(L[X1]["ad"]+"("+X1+") , "+L[X1]["konum"]+" konumuna yerlesip "+H[L[X1]["konum"]]["ad"]+" adini bahsetti")
+		/*D["tarih"]["hersey"][D["tarih"]["hersey"].length] = R[L[X1]["ulke"]][1]+"("+L[X1]["ulke"]+") 'dan "+BAH(X1)+" "+L[X1]["ad"]+"("+X1+") , "+H[L[X1]["konum"]]["ad"]+"("+L[X1]["konum"]+") 'a yerlesti ("+SK()+")"
+		D["tarih"]["yerlesim"][L[X1]["konum"]] = []
+		D["tarih"]["yerlesim"][L[X1]["konum"]][D["tarih"]["yerlesim"][L[X1]["konum"]].length] = R[L[X1]["ulke"]][1]+"("+L[X1]["ulke"]+") 'dan "+BAH(X1)+" "+L[X1]["ad"]+"("+X1+") yerlesti ("+SK()+")"
+		D["tarih"]["kisi"][X1][D["tarih"]["kisi"][X1].length] = R[L[X1]["ulke"]][1]+"("+L[X1]["ulke"]+") 'da "+BAH(X1)+" "+H[L[X1]["konum"]]["ad"]+"("+L[X1]["konum"]+") 'a yerlesti ("+SK()+")"
+		D["tarih"]["ulke"][L[X1]["ulke"]][D["tarih"]["ulke"][L[X1]["ulke"]].length] = BAH(X1)+" "+L[X1]["ad"]+"("+X1+") "+H[L[X1]["konum"]]["ad"]+"("+L[X1]["konum"]+") 'a yerlesti ("+SK()+")"
+		if(L[X1]["kral"] != "yok" && L[X1]["kral"] != X1){
+			D["tarih"]["kisi"][L[X1]["kral"]][D["tarih"]["kisi"][L[X1]["kral"]].length] = R[L[X1]["ulke"]][1]+"("+L[X1]["ulke"]+") 'da "+L[X1]["ad"]+"("+X1+") adli lordu "+H[L[X1]["konum"]]["ad"]+"("+L[X1]["konum"]+") 'a yerlesti ("+SK()+")"
+		}*/
+	}else {
+		console.log(L[X1]["ad"]+"("+X1+") , "+H[L[X1]["konum"]]["ad"]+"("+L[X1]["konum"]+")'a yerlesti")
+		/*D["tarih"]["hersey"][D["tarih"]["hersey"].length] = R[L[X1]["ulke"]][1]+"("+L[X1]["ulke"]+") 'dan "+BAH(X1)+" "+L[X1]["ad"]+"("+X1+") , "+H[L[X1]["konum"]]["ad"]+"("+L[X1]["konum"]+") 'a yerlesti ("+SK()+")"
+		D["tarih"]["yerlesim"][L[X1]["konum"]][D["tarih"]["yerlesim"][L[X1]["konum"]].length] = R[L[X1]["ulke"]][1]+"("+L[X1]["ulke"]+") 'dan "+BAH(X1)+" "+L[X1]["ad"]+"("+X1+") yerlesti ("+SK()+")"
+		D["tarih"]["kisi"][X1][D["tarih"]["kisi"][X1].length] = R[L[X1]["ulke"]][1]+"("+L[X1]["ulke"]+") 'da "+BAH(X1)+" "+H[L[X1]["konum"]]["ad"]+"("+L[X1]["konum"]+") 'a yerlesti ("+SK()+")"
+		D["tarih"]["ulke"][L[X1]["ulke"]][D["tarih"]["ulke"][L[X1]["ulke"]].length] = BAH(X1)+" "+L[X1]["ad"]+"("+X1+") "+H[L[X1]["konum"]]["ad"]+"("+L[X1]["konum"]+") 'a yerlesti ("+SK()+")"
+		if(L[X1]["kral"] != "yok" && L[X1]["kral"] != X1){
+			//console.log("bura - "+L[X1]["kral"])
+			D["tarih"]["kisi"][L[X1]["kral"]][D["tarih"]["kisi"][L[X1]["kral"]].length] = R[L[X1]["ulke"]][1]+"("+L[X1]["ulke"]+") 'da "+L[X1]["ad"]+"("+X1+") adli lordu "+H[L[X1]["konum"]]["ad"]+"("+L[X1]["konum"]+") 'a yerlesti ("+SK()+")"
+		}*/
+	}
+	//localStorage.setItem("KVSD",JSON.stringify(D))
+	Canvas(L[X1]["konum"][0],L[X1]["konum"][1],R[L[X1]["ulke"]][0])
+	if(LN == X1){
+		Canvas(L[X1]["konum"][0],L[X1]["konum"][1],"green")
+	}
+	kesif(LN)
+	birlikY()
+	renkkayitAL(X1)
+}
+
+//saldir
+function saldir(X1){
+	D5 = "XXX"
+	
+	if(H[L[X1]["konum"]]["ulke"] == L[X1]["ulke"]){return alert("yerlesimle ayni ulkedensin")}
+	if(L[X1]["birlik"].length == 0){return alert("askerin yok")}
+	
+	D3 = [L[X1]["birlik"].length,H[L[X1]["konum"]]["nufuz"].length]
+	while(D3[0] != 0 && H[L[X1]["konum"]]["nufuz"].length != 0){
+		D4 = Math.floor(Math.random() * H[L[X1]["konum"]]["nufuz"].length)
+		H[L[X1]["konum"]]["nufuz"][D4]["can"] = H[L[X1]["konum"]]["nufuz"][D4]["can"] - 40
+		D3[0]--
+		if(H[L[X1]["konum"]]["nufuz"][D4]["can"] < 0 || H[L[X1]["konum"]]["nufuz"][D4]["can"] == 0){
+			H[L[X1]["konum"]]["nufuz"] = AS1(H[L[X1]["konum"]]["nufuz"],D4)
+			L[X1]["para"] = L[X1]["para"] + 20
+			if(H[L[X1]["konum"]]["nufuz"].length == 0){
+				D3[0] = 0
+			}
+		}
+	}
+	
+	while(D3[1] != 0 && L[X1]["birlik"].length != 0){
+		D4 = Math.floor(Math.random() * L[X1]["birlik"].length)
+		L[X1]["birlik"][D4]["can"] = L[X1]["birlik"][D4]["can"] - 20
+		D3[1]--
+		if(L[X1]["birlik"][D4]["can"] < 0 || L[X1]["birlik"][D4]["can"] == 0){
+			L[X1]["birlik"] = AS1(L[X1]["birlik"],D4)
+			if(L[X1]["birlik"].length == 0){
+				D3[1] = 0
+				console.log(L[X1]["ad"]+"("+X1+") birligi yok oldu")
+			}
+		}
+	}
+	if(H[L[X1]["konum"]]["nufuz"].length == 0){
+		if(H[L[X1]["konum"]]["lord"] != "yok"){
+			console.log(R[L[X1]["ulke"]][1]+"("+L[X1]["ulke"]+")'dan "+L[X1]["ad"]+"("+X1+") , "+R[H[L[X1]["konum"]]["ulke"]][1]+"("+H[L[X1]["konum"]]["ulke"]+")'dan "+L[H[L[X1]["konum"]]["lord"]]["ad"]+"("+H[L[X1]["konum"]]["lord"]+")'in olan "+H[L[X1]["konum"]]["ad"]+"("+L[X1]["konum"]+") yerlesimini yakip yikdi")
+		}else {
+			console.log(R[L[X1]["ulke"]][1]+"("+L[X1]["ulke"]+")'dan "+L[X1]["ad"]+"("+X1+") , "+R[H[L[X1]["konum"]]["ulke"]][1]+"("+H[L[X1]["konum"]]["ulke"]+")'nin "+H[L[X1]["konum"]]["ad"]+"("+L[X1]["konum"]+") yerlesimini yakip yikdi")
+		}
+		if(H[L[X1]["konum"]]["lord"] != "yok"){
+			L[H[L[X1]["konum"]]["lord"]]["topr"] = AS2(L[H[L[X1]["konum"]]["lord"]]["topr"],L[X1]["konum"])
+			
+			if(L[H[L[X1]["konum"]]["lord"]]["topr"].length == 0){
+				alerte(L[H[L[X1]["konum"]]["lord"]]["ad"]+"("+H[L[X1]["konum"]]["lord"]+") topraksiz kalip oldu")
+                if(LN == H[L[X1]["konum"]]["lord"]){
+					D5 = "HD("+H[L[X1]['konum']]['lord']+")"
+				}else {
+					D5 = "olum("+H[L[X1]['konum']]['lord']+")"
+				}
+            }
+		}
+		
+		RK = AS2(RK,[...L[X1]["konum"]])
+		H[L[X1]["konum"]] = {
+			"ad":H[L[X1]["konum"]]["ad"],
+			"birlikler":H[L[X1]["konum"]]["birlikler"],
+			"lord":"yok",
+			"nufuz":[],
+			"sinir":H[L[X1]["konum"]]["sinir"],
+			"ulke":0
+		}
+		
+		if(D5 != "XXX"){
+			eval(D5)
+		}
+		Canvas(L[X1]["konum"][0],L[X1]["konum"][1],"white")
+        localStorage.setItem("KVSRK",JSON.stringify(RK))
+    }
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	localStorage.setItem("KVSH",JSON.stringify(H))
+	kesif(LN)
+	birlikY()
+}
+function saldir1(X1,X2){
+	if(L[X1]["birlik"].length == 0){return alert("askerin yok")}
+	if(X1 == X2){return alert("Hoba")}
+	D5 = [L[X2]["birlik"].length,L[X1]["birlik"].length]
+	
+	while(D5[1] > 0 && L[X2]["birlik"].length > 0){
+		D4 = Math.floor(Math.random() * L[X2]["birlik"].length)
+		L[X2]["birlik"][D4]["can"] = L[X2]["birlik"][D4]["can"] - 20
+		D5[1]--
+		if(L[X2]["birlik"][D4]["can"] < 0 || L[X2]["birlik"][D4]["can"] == 0){
+			L[X2]["birlik"] = AS1(L[X2]["birlik"],D4)
+			if(L[X2]["birlik"].length == 0){
+				D5[1] = 0
+			}
+		}
+	}
+	
+	while(D5[0] > 0 && L[X1]["birlik"].length > 0){
+		D4 = Math.floor(Math.random() * L[X1]["birlik"].length)
+		L[X1]["birlik"][D4]["can"] = L[X1]["birlik"][D4]["can"] - 20
+		D5[0]--
+		if(L[X1]["birlik"][D4]["can"] < 0 || L[X1]["birlik"][D4]["can"] == 0){
+			L[X1]["birlik"] = AS1(L[X1]["birlik"],D4)
+			if(L[X1]["birlik"].length == 0){
+				D5[0] = 0
+			}
+		}
+	}
+	
+	if(L[X1]["birlik"].length == 0){
+		console.log(L[X1]["ad"]+"("+X1+") birligi yok oldu")
+	}
+	if(L[X2]["birlik"].length == 0){
+		D4 = 0
+		if(L[X2]["ulke"] == L[X1]["ulke"]){
+			while(L[X2]["topr"].length != D4){
+				H[L[X2]["topr"][D4]]["lord"] = X1
+				L[X1]["topr"][L[X1]["topr"].length] = [...L[X2]["topr"][D4]]
+				D4++
+			}
+		}else {
+			while(L[X2]["topr"].length != D4){
+				H[L[X2]["topr"][D4]]["lord"] = "yok"
+				D4++
+			}
+		}
+		console.log(R[L[X1]["ulke"]][1]+"("+L[X1]["ulke"]+")'dan "+L[X1]["ad"]+"("+X1+") , "+R[L[X2]["ulke"]][1]+"("+L[X2]["ulke"]+")'dan "+L[X2]["ad"]+"("+X2+")'i meydanda yendi")
+		if(LN == X2){
+			HD(X2)
+		}else {
+			olum(X2)
+		}
+	}
+	
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	localStorage.setItem("KVSH",JSON.stringify(H))
+	kesif(LN)
+	birlikY()
+}
+
+//olum
+function olum(X1){
+	F4 = 0
+	while(L[X1]["topr"].length != F4){
+		if(H[L[X1]["topr"][F4]]["lord"] == X1){
+			H[L[X1]["topr"][F4]]["lord"] = "yok"
+		}
+        F4++
+    }
+	H[L[X1]["konum"]]["birlikler"] = AS3(H[L[X1]["konum"]]["birlikler"],X1)
+    
+    F4 = 0
+	if(H[L[X1]["konum"]]["birlikler"].length > 0){
+		if([true,true,true,false][Math.floor(Math.random() * 4)]){
+			F5 = 0
+			F6 = []
+			while(H[L[X1]["konum"]]["birlikler"].length != F5){
+				if(H[L[X1]["konum"]]["birlikler"][F5] != X1){
+					F6[F6.length] = H[L[X1]["konum"]]["birlikler"][F5]
+				}
+				F5++
+			}
+			//F6 = F6[Math.floor(Math.random() * F6.length)]
+			F5 = 0
+			while(L[X1]["birlik"].length != F5){
+				F7 = F6[Math.floor(Math.random() * F6.length)]
+				L[F7]["birlik"][L[F7]["birlik"].length] = L[X1]["birlik"][F5]
+				F5++
+			}
+		}else {
+			while(L[X1]["birlik"].length != F4){
+				H[L[X1]["konum"]]["nufuz"][H[L[X1]["konum"]]["nufuz"].length] = L[X1]["birlik"][F4]
+				F4++
+			}
+		}
+	}else {
+		while(L[X1]["birlik"].length != F4){
+			H[L[X1]["konum"]]["nufuz"][H[L[X1]["konum"]]["nufuz"].length] = L[X1]["birlik"][F4]
+			F4++
+		}
+	}
+	
+	R[L[X1]["ulke"]][2] = AS3(R[L[X1]["ulke"]][2],X1)
+	if(R[L[X1]["ulke"]][3] == X1){
+		alerte(R[L[X1]["ulke"]][1]+"("+L[X1]["ulke"]+") krali "+L[X1]["ad"]+"("+X1+") oldu")
+		R[L[X1]["ulke"]][3] = "yok"
+	}
+	
+	if(L[X1]["kral"] == X1){
+		F4 = 0
+		while(R[L[X1]["ulke"]][2].length != F4){
+			if(L[R[L[X1]["ulke"]][2][F4]]["kral"] == X1){
+				L[R[L[X1]["ulke"]][2][F4]]["kral"] = "yok"
+			}
+			F4++
+		}
+	}
+	L[X1] = "yok"
+	
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	localStorage.setItem("KVSH",JSON.stringify(H))
+	localStorage.setItem("KVSR",JSON.stringify(R))
+}
+
+//hayata don
+function HD(){
+	Canvas(L[LN]["konum"][0],L[LN]["konum"][1],R[H[L[LN]["konum"]]["ulke"]][0])
+	olum(LN)
+	
+	C5 = []
+	C4 = 0
+	while(RK.length != C4){
+		if(H[RK[C4]]["lord"] == "yok" && R[H[RK[C4]]["ulke"]][3] == "yok"){
+			C5[C5.length] = [...RK[C4]]
+		}
+		C4++
+	}
+	C7 = C5[Math.floor(Math.random() * C5.length)]
+	if(C7 == undefined){
+		C4 = D["bas"]["L"]
+		C5 = []
+		while(L.length != C4){
+			if(L[C4] != "yok" && C4 != 0){
+				C5[C5.length] = C4
+			}
+			C4++
+		}
+		LN = C5[Math.floor(Math.random() * C5.length)]
+		alert(L[LN]["ad"]+"("+LN+") adiyla ciktin")
+	}else {
+		C6 = {
+			"konum":[...C7],
+			"birlik":[],
+			"topr":[[...C7]],
+			"para":0,
+			"sinir":30,
+			"ulke":H[C7]["ulke"],
+			"ad":KAB(H[C7]["ad"]),
+			"yas":yas(),
+			"B":true,
+			"kral":"yok"
+		}
+		C6["sinir"] += Math.floor(H[C6["topr"][0]]["sinir"]/10)
+		LN = L.length
+		if(R[C6["ulke"]][3] != "yok"){
+			C6["kral"] = R[C6["ulke"]][3]
+		}
+		H[C7]["lord"] = LN
+		L[LN] = C6
+		D["tarih"]["kisi"][L.length - 1] = []
+		R[L[LN]["ulke"]][2][R[L[LN]["ulke"]][2].length] = LN
+		Canvas(C7[0],C7[1],"green")
+		alerte(H[C6["konum"]]["ad"]+"("+C6["konum"]+") konumunda "+C6["ad"]+"("+LN+") adiyla ciktin")
+	}
+	localStorage.setItem("KVSP",LN)
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	localStorage.setItem("KVSR",JSON.stringify(R))
+	kesif(LN)
+	if(L[LN] != "yok"){
+		birlikY()
+	}
+}
+
+//Belirle
+function KAB(X1){
+	G1 = ["Luo","Timar","Sopar","Saning",X1 + " 'lu","David","Puo","Fato","Buwi","Lu","Sanor","Caopar","Tiring","Wuwer","Guja","Ameti","Olwe","Tomris","Salihi","Mete"]
+	return G1[Math.floor(Math.random() * G1.length)]
+}
+function UAB(X1){
+	return X1[Math.floor(Math.random() * X1.length)]+" "+["Kingdom","Beyligi","Devleti"][Math.floor(Math.random() * 3)]
+}
+function BAB(X1){
+	G1 = ["Sanodor","Cujik","Harrigo","Fula De Der","Pun Parun",X1+" Town","Paros","Ajoya","Cuncunve","Hujalya",X1+"eli","Guvalya","Suelya","Destya","Jombarya","Bumbvaya","Oveya"]
+	return G1[Math.floor(Math.random() * G1.length)]
+}
+function RB(){
+	G1 = ["orange","magenta","violet","yellow","grey","#CA573F","#6B7110","#2884C7","#2EAD0F","#6AF848","#CE62B9","#88046E","#F54D50"]
+	return G1[Math.floor(Math.random() * G1.length)]
+}
+
+//fonksiyon
+function AS(X1,X2){
+	G1 = 0
+	
+	while(!(X1.length == G1)){
+		if(X1[G1]["X"] == X2){
+			G4 = G1
+		}
+		G1++
+	}
+	
+	G2 = 0
+	G3 = []
+	
+	while(!(X1.length == G2)){
+		if(!(G4 == G2)){
+			G3[G3.length] = X1[G2]
+		}
+		G2++
+	}
+	return G3
+}
+function AS1(X1,X2){
+	G2 = 0
+	G3 = []
+	
+	while(X1.length != G2){
+		if(G2 != X2){
+			G3[G3.length] = X1[G2]
+		}
+		G2++
+	}
+	return G3
+}
+function AS2(X1,X2){
+	G1 = 0
+	G4 = []
+	while(X1.length != G1){
+		if(X1[G1][0] == X2[0] && X1[G1][1] == X2[1]){
+			G4[G4.length] = G1
+			G1 = X1.length - 1
+		}
+		G1++
+	}
+	
+	G1 = 0
+	G3 = []
+	
+	while(X1.length != G1){
+		if(!(G4.includes(G1))){
+			G3[G3.length] = X1[G1]
+		}
+		G1++
+	}
+	//if(G4.length == 0){alert("sorun satir 350")}
+	//console.log(X1+"---"+G3+"---"+X2)
+	return G3
+}
+function AS3(X1,X2){
+	GG1 = 0
+	GG4 = []
+	
+	while(X1.length != GG1){
+		if(X1[GG1] == X2){
+			GG4[GG4.length] = GG1
+		}
+		GG1++
+	}
+	
+	GG1 = 0
+	GG3 = []
+	
+	while(X1.length != GG1){
+		if(!(GG4.includes(GG1))){
+			GG3[GG3.length] = X1[GG1]
+		}
+		GG1++
+	}
+	return GG3
+}
+
+//son
+kesif(LN)
+birlikY()
+renkkayit()
+
+setInterval(function(){//ureme
+	if(L[LN]["B"] == true){return LN = LN}
+	if(B){return LN = LN}
+	C2 = 0
+	B1 = []
+    while(!(RK.length == C2)){
+        if(!(H[RK[C2]]["sinir"] == H[RK[C2]]["nufuz"].length) || H[RK[C2]]["sinir"] > H[RK[C2]]["nufuz"].length){
+			ureme1(RK[C2])
+		}else {
+			B1[B1.length] = H[RK[C2]]["ad"]+"("+RK[C2]+") = nufuz sinira ulasti ("+H[RK[C2]]["nufuz"].length+")"
+		}
+        C2++
+    }
+	console.log({"ureme":B1})
+	//console.log("|")
+}, zaman("ureme"));
+setInterval(function(){//vergi
+	if(L[LN]["B"] == true){return LN = LN}
+	if(B){return LN = LN}
+	D5 = D["bas"]["L"]
+	B1 = []
+	while(L.length != D5){
+		if(L[D5] != "yok"){
+			D4 = 0
+			D1 = 0
+			D2 = 0
+			while(!(L[D5]["topr"].length == D4)){
+				if(L[D5]["kral"] == "yok"){
+					B1[B1.length] = L[D5]["ad"]+"("+D5+") " + H[L[D5]["topr"][D4]]["ad"] + "("+L[D5]["topr"][D4]+") den " + (H[L[D5]["topr"][D4]]["nufuz"].length * 2) + " kazandi"
+					L[D5]["para"] = L[D5]["para"] + (H[L[D5]["topr"][D4]]["nufuz"].length * 2)
+					D1 = D1 + (H[L[D5]["topr"][D4]]["nufuz"].length * 2)
+				}else {
+					if(L[D5]["kral"] == D5){
+						B1[B1.length] = L[D5]["ad"]+"("+D5+") " + H[L[D5]["topr"][D4]]["ad"] + "("+L[D5]["topr"][D4]+") den " + (H[L[D5]["topr"][D4]]["nufuz"].length * 2) + " kazandi"
+						L[D5]["para"] = L[D5]["para"] + H[L[D5]["topr"][D4]]["nufuz"].length * 2
+						D1 = D1 + (H[L[D5]["topr"][D4]]["nufuz"].length * 2)
+					}else {
+						B1[B1.length] = L[L[D5]["kral"]]["ad"]+"("+L[D5]["kral"]+") " + H[L[D5]["topr"][D4]]["ad"] + "("+L[D5]["topr"][D4]+") den " + ((H[L[D5]["topr"][D4]]["nufuz"].length * 2)/4) + " kazandi"
+						L[L[D5]["kral"]]["para"] = L[L[D5]["kral"]]["para"] + ((H[L[D5]["topr"][D4]]["nufuz"].length * 2)/4)
+						D2 = D2 + ((H[L[D5]["topr"][D4]]["nufuz"].length * 2)/4)
+						
+						B1[B1.length] = L[D5]["ad"]+"("+D5+") " + H[L[D5]["topr"][D4]]["ad"] + "("+L[D5]["topr"][D4]+") den " + (((H[L[D5]["topr"][D4]]["nufuz"].length * 2)/2) + ((H[L[D5]["topr"][D4]]["nufuz"].length * 2)/4)) + " kazandi"
+						L[D5]["para"] = L[D5]["para"] + (((H[L[D5]["topr"][D4]]["nufuz"].length * 2)/2) + ((H[L[D5]["topr"][D4]]["nufuz"].length * 2)/4))
+						D1 = D1 + (((H[L[D5]["topr"][D4]]["nufuz"].length * 2)/2) + ((H[L[D5]["topr"][D4]]["nufuz"].length * 2)/4))
+					}
+				}
+				D4++
+			}
+			B1[B1.length] = L[D5]["ad"]+"("+D5+") birliklerine " + (L[D5]["birlik"].length * 2) + " harcadi"
+			L[D5]["para"] = L[D5]["para"] - L[D5]["birlik"].length * 2
+			D1 = D1 - (L[D5]["birlik"].length * 2)
+			B1[B1.length] = L[D5]["ad"]+"("+D5+") toplamda "+D1+" kazandi"
+			if(D2 != 0){
+				B1[B1.length] = L[L[D5]["kral"]]["ad"]+"("+L[D5]["kral"]+") toplamda "+D2+" kazandi"
+			}
+		}
+		D5++
+	}
+	
+	console.log({"vergi":B1})
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	birlikY()
+}, zaman("vergi"));//47000);
+setInterval(function(){//yas
+	if(L[LN]["B"] == true){return LN = LN}
+	if(B){return LN = LN}
+	D1 = D["bas"]["L"]
+	B1 = []
+	while(L.length != D1){
+		if(L[D1] != "yok"){
+			L[D1]["yas"][0]++
+			B1[B1.length] = L[D1]["ad"]+"("+D1+") "+(L[D1]["yas"][0]-1)+" yasindan "+L[D1]["yas"][0]+" yasina gecti. "+L[D1]["yas"][1]+" yasinda olecek"
+			if(L[D1]["yas"][0] == L[D1]["yas"][1] || L[D1]["yas"][0] > L[D1]["yas"][1]){
+				D5 = true
+				if(D1 == LN && D5){
+					alerte(L[D1]["ad"]+"("+D1+") yaslanarak oldu")
+					HD()
+					D5 = false
+				}
+				if(D1 != LN && D5){
+					alerte(L[D1]["ad"]+"("+D1+") yaslanarak oldu")
+					olum(D1)
+					D5 = false
+				}
+			}
+		}
+		D1++
+	}
+	console.log({"yas":B1})
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	kesif(LN)
+	birlikY()
+}, zaman("yas"));//40000);
+setInterval(function(){//yeni lord
+	if(L[LN]["B"] == true){return LN = LN}
+	if(B){return LN = LN}
+	if(RK.length == 0){return LN = LN}//console.log("yerlesim yok")
+	D5 = 0
+	D6 = []
+	while(RK.length != D5){
+		if(H[RK[D5]]["lord"] == "yok" && R[H[RK[D5]]["ulke"]][3] == "yok"){
+			D6[D6.length] = [...RK[D5]]
+		}
+		D5++
+	}
+	if(D6.length == 0){return LN = LN}//console.log("bos yerlesim yok")
+	D7 = D6[Math.floor(Math.random() * D6.length)]
+	D8 = {
+		"konum":[...D7],
+		"birlik":[],
+		"topr":[[...D7]],
+		"para":0,
+		"sinir":30,
+		"ulke":H[D7]["ulke"],
+		"ad":KAB(H[D7]["ad"]),
+		"yas":yas(),
+		"B":true,
+		"kral":"yok"
+	}
+	if(R[D8["ulke"]][3] != "yok"){
+		D8["kral"] = R[D8["ulke"]][3]
+	}
+	if([true,false][Math.floor(Math.random() * 2)]){
+		R[D8["ulke"]][2][R[D8["ulke"]][2].length] = L.length
+	}else {
+		D8["ulke"] = UAB([D8["ad"],H[D8["konum"]]["ad"]])
+		R[R.length] = [RB(),D8["ulke"],[L.length],L.length]
+		D["tarih"]["ulke"][R.length - 1] = []
+		D8["ulke"] = R.length - 1
+		D8["kral"] = L.length
+		H[D8["konum"]]["ulke"] = D8["ulke"]
+	}
+	D8["B"] = false
+	L[L.length] = D8
+	D["tarih"]["kisi"][L.length - 1] = []
+	H[D8["konum"]]["lord"] = L.length - 1
+	H[D8["konum"]]["birlikler"][H[D8["konum"]]["birlikler"].length] = L.length - 1
+	D8["sinir"] += Math.floor(H[D8["topr"][0]]["sinir"]/10)
+	console.log(H[D8["konum"]]["ad"]+"("+D8["konum"]+") konumumunda "+R[D8["ulke"]][1]+"("+D8["ulke"]+") sini benimsemis "+D8["ad"]+"("+(L.length - 1)+") adli bir lord cikti")
+	
+	if(H[L[L.length - 1]["konum"]]["birlikler"].length > 1){
+		if(L[H[L[L.length - 1]["konum"]]["birlikler"][0]]["kral"] != "yok"){
+			//(( * 40) + ( * 100)) * 1.2 > ( * 20) + ( * 100)
+			if(((L[H[L[L.length - 1]["konum"]]["birlikler"][0]]["birlik"].length * 40) + (L[H[L[L.length - 1]["konum"]]["birlikler"][0]]["birlik"].length * 100)) * 1.2 > (H[L[L.length - 1]["konum"]]["nufuz"].length * 20) + (H[L[L.length - 1]["konum"]]["nufuz"].length * 100)){
+				yemin(L.length - 1,H[L[L.length - 1]["konum"]]["birlikler"][0])
+			}
+		}
+	}
+	
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	localStorage.setItem("KVSH",JSON.stringify(H))
+	localStorage.setItem("KVSR",JSON.stringify(R))
+	if(D8["konum"] == L[LN]["konum"]){
+		Canvas(D8["konum"][0],D8["konum"][1],"green")
+	}else {
+		Canvas(D8["konum"][0],D8["konum"][1],R[D8["ulke"]][0])
+	}
+	kesif(LN)
+	birlikY()
+}, zaman("yeni lord"));
+setInterval(function(){//ulkeler
+	if(L[LN]["B"] == true){return LN = LN}
+	if(B){return LN = LN}
+	
+	D2 = D["bas"]["R"]
+	while(R.length != D2 && LVY()){
+		if(R[D2][2].length == 0){
+			alerte(R[D2][1]+"("+D2+") yikildi")
+			R[D2] = "yok"
+		}
+		D2++
+	}
+	
+	localStorage.setItem("KVSR",JSON.stringify(R))
+}, zaman("ulkeler"));
+setInterval(function(){//yeni taht talibi
+	if(L[LN]["B"] == true){return LN = LN}
+	if(B){return LN = LN}
+	D2 = D["bas"]["L"]
+	D7 = []
+	while(L.length != D2){
+		if(L[D2] != "yok"){
+			if(L[D2]["kral"] == "yok"){
+				D7[D7.length] = D2
+			}
+		}
+		D2++
+	}
+	if(D7.includes(LN)){
+		D7 = AS3(D7,LN)
+	}
+	if(D7.length == 0){return LN = LN}
+	D7 = D7[Math.floor(Math.random() * D7.length)]
+	KS(D7)
+	renkkayit()
+	kesif(LN)
+}, zaman("yeni taht talibi"));
+setInterval(function(){//yeni kral
+	if(L[LN]["B"] == true){return LN = LN}
+	if(B){return LN = LN}
+	D2 = D["bas"]["R"]
+	while(R.length != D2){
+		if(R[D2] != "yok"){
+			if(R[D2][3] == "yok"){
+				D3 = 0
+				D4 = []
+				while(R[D2][2].length != D3){
+					//if(L[R[D2][2][D3]]["kral"] != "yok"){
+						if(!(D4.includes(L[R[D2][2][D3]]["kral"])) && L[R[D2][2][D3]]["ulke"] == D2){
+							D4[D4.length] = L[R[D2][2][D3]]["kral"]
+						}
+					//}
+					D3++
+				}
+				//console.log(D4)
+				if(D4.length == 1 && D4[0] != "yok"){
+					R[D2][3] = D4[0]
+					alerte(L[R[D2][3]]["ad"]+"("+R[D2][3]+") "+R[D2][1]+"("+D2+") tahtina cikti")
+				}
+			}
+		}
+		D2++
+	}
+	
+	localStorage.setItem("KVSR",JSON.stringify(R))
+}, zaman("yeni kral"));
+setInterval(function(){//yapay zeka
+	if(L[LN]["B"] == true){return LN = LN}
+	if(B){return LN = LN}
+	B = true
+	H1 = D["bas"]["L"]+1
+	H2 = []
+	while(L.length != H1){
+		if(L[H1] != "yok" && H1 != LN){
+			H2[H2.length] = H1
+		}
+		H1++
+	}
+	H1 = 0
+	//H7 = 3000
+	H9 = 0
+	while(H2.length != H9){
+		setTimeout(function(){
+			if(L[LN]["B"] == true){return LN = LN}
+			if(B){return LN = LN}
+			if(L[H2[H1]] != "yok" && H2[H1] != undefined){
+				H3 = 5
+				H11 = 0
+				while(H3 > 0 && H11 != 5){
+					H11++
+					//console.log(H2[H1]+"   "+L[H2[H1]]+"   "+H2+"   "+H1+"   "+H2.length)
+					//[]()
+					
+					//console.log(H2[H1]+"----"+L[H2[H1]])
+					//saldir
+					if((H3 > 0 && L[H2[H1]]["birlik"].length > 0) && H[L[H2[H1]]["konum"]]["birlikler"].length > 1){
+						H4 = 0
+						while((H[L[H2[H1]]["konum"]]["birlikler"].length != H4 && L[H2[H1]]["birlik"].length > 0) && H3 > 0){
+							if(L[H[L[H2[H1]]["konum"]]["birlikler"][H4]]["kral"] != L[H2[H1]]["kral"] && H[L[H2[H1]]["konum"]]["birlikler"].length > 1){
+								//console.log(H[L[H2[H1]]["konum"]]["birlikler"])
+								//console.log(H4+" - "+H2[H1])
+								saldir1(H2[H1],H[L[H2[H1]]["konum"]]["birlikler"][H4])
+								H3 -= 0.5
+								H4 = 0
+							}
+							H4++
+						}
+					}
+					/*while((H3 > 0 && L[H2[H1]]["birlik"].length > 0) && (H[L[H2[H1]]["konum"]]["birlikler"].length != H4 && H[L[H2[H1]]["konum"]]["birlikler"].length > 1)){
+						if(H3 == 0){
+							H4 = H[L[H2[H1]]["konum"]]["birlikler"].length
+						}else {
+							H10 = true
+							if(H[L[H2[H1]]["konum"]]["birlikler"][H4] == undefined){
+								H10 = false
+								H4--
+							}
+							if(L[H[L[H2[H1]]["konum"]]["birlikler"][H4]] == "yok"){
+								H10 = false
+								H[L[H2[H1]]["konum"]]["birlikler"] = AS3(H[L[H2[H1]]["konum"]]["birlikler"],H4)
+								H4--
+							}
+							console.log(H[L[H2[H1]]["konum"]]["birlikler"])
+							console.log(H4)
+							if(L[H[L[H2[H1]]["konum"]]["birlikler"][H4]]["kral"] == L[H2[H1]]["kral"]){
+								H10 = false
+							}
+							if(H10){
+								saldir1(H2[H1],H[L[H2[H1]]["konum"]]["birlikler"][H4])
+								H3--
+							}else {
+								H4++
+							}
+						}
+					}*/
+					//console.log("bura")
+					//bolge
+					if(H[L[H2[H1]]["konum"]]["nufuz"].length > 0 && H3 > 0){
+						if(H[L[H2[H1]]["konum"]]["ulke"] == 0){
+							if([true,false][Math.floor(Math.random() * 2)]){
+								while(((H[L[H2[H1]]["konum"]]["nufuz"].length != 0 && L[H2[H1]]["birlik"].length > 0))){
+									saldir(H2[H1])
+									H3--
+								}
+							}else {
+								while(((L[H2[H1]]["birlik"].length * 40) + (L[H2[H1]]["birlik"].length * 100) * 1.2 > (H[L[H2[H1]]["konum"]]["nufuz"].length * 20) + (H[L[H2[H1]]["konum"]]["nufuz"].length * 100)) && ((H[L[H2[H1]]["konum"]]["nufuz"].length != 0 && L[H2[H1]]["birlik"].length > 0))){
+									saldir(H2[H1])
+									H3--
+								}
+							}
+						}else {
+							if(L[H2[H1]]["ulke"] == H[L[H2[H1]]["konum"]]["ulke"]){
+								if(H[L[H2[H1]]["konum"]]["lord"] != "yok"){
+									if(L[H[L[H2[H1]]["konum"]]["lord"]]["kral"] != "yok"){
+										if(L[H2[H1]]["kral"] != L[H[L[H2[H1]]["konum"]]["lord"]]["kral"]){
+											//napim
+										}else {
+											//napim
+										}
+									}else {
+										//napim
+									}
+								}else {
+									if(R[L[H2[H1]]["ulke"]][3] == "yok"){
+										sahiplen(H2[H1])
+										H3--
+									}else {
+										if(R[L[H2[H1]]["ulke"]][3] == H2[H1]){
+											if(L[H2[H1]]["topr"].length > Bsinir + Bsinir){
+												H[L[H2[H1]]["konum"]]["lord"] = H2[H1]
+												LS(H2[H1])
+												H3--
+											}else {
+												sahiplen(H2[H1])
+												H3--
+											}
+										}else {
+											//napim
+										}
+									}
+								}
+							}else {
+								//if(((L[H2[H1]]["birlik"].length * 40) + (L[H2[H1]]["birlik"].length * 100)) * 1.2  < (H[L[H2[H1]]["konum"]]["nufuz"].length * 20) + (H[L[H2[H1]]["konum"]]["nufuz"].length * 100)){// && H[L[H2[H1]]["konum"]]["lord"] != "yok"
+									if([true,false][Math.floor(Math.random() * 2)]){
+										while((H[L[H2[H1]]["konum"]]["nufuz"].length > 0 && L[H2[H1]]["birlik"].length > 0)){
+											saldir(H2[H1])
+											H3--
+										}
+									}else {
+										while((((L[H2[H1]]["birlik"].length * 40) + (L[H2[H1]]["birlik"].length * 100)) * 1.2 > (H[L[H2[H1]]["konum"]]["nufuz"].length * 20) + (H[L[H2[H1]]["konum"]]["nufuz"].length * 100)) && (((H[L[H2[H1]]["konum"]]["nufuz"].length > 0 && L[H2[H1]]["birlik"].length > 0)))){
+											saldir(H2[H1])
+											H3--
+										}
+									}
+								/*}else {
+									if(H[L[H2[H1]]["konum"]]["lord"] != "yok"){
+										if([true,false][Math.floor(Math.random() * 2)]){
+											while((H[L[H2[H1]]["konum"]]["nufuz"].length > 0 && L[H2[H1]]["birlik"].length > 0)){
+												saldir(H2[H1])
+												H3--
+											}
+										}else {
+											while((((L[H2[H1]]["birlik"].length * 40) + (L[H2[H1]]["birlik"].length * 100)) * 1.2 > (H[L[H2[H1]]["konum"]]["nufuz"].length * 20) + (H[L[H2[H1]]["konum"]]["nufuz"].length * 100)) && (((H[L[H2[H1]]["konum"]]["nufuz"].length > 0 && L[H2[H1]]["birlik"].length > 0)))){
+												saldir(H2[H1])
+												H3--
+											}
+										}
+									}else {
+										//napim
+									}
+								}*/
+							}
+						}
+					}/*else {
+						if(CB(L[H2[H1]]["birlik"])["cift"] > 0 && H[L[H2[H1]]["konum"]]["nufuz"].length == 0){
+							yerles(H2[H1])
+							H3--
+						}
+					}*/
+					//console.log("bura")
+					//yerles
+					if(CB(L[H2[H1]]["birlik"])["cift"] > 0 && (H3 > 0 && H[L[H2[H1]]["konum"]]["nufuz"].length == 0)){
+						yerles(H2[H1])
+						H3--
+					}
+					//console.log("bura")
+					//lord sal
+					if((H3 > 0 && L[H2[H1]]["topr"].length > Bsinir + Bsinir) && (H[L[H2[H1]]["konum"]]["lord"] == H2[H1] && L[H2[H1]]["kral"] == H2[H1])){
+						LS(H2[H1])
+						H3--
+					}
+					//console.log("bura")
+					//birlik al
+					if(H[L[H2[H1]]["konum"]]["ulke"] == L[H2[H1]]["ulke"]){
+						H4 = 0
+						H5 = 0
+						while(L[H2[H1]]["topr"].length != H4){
+							H5 += H[L[H2[H1]]["topr"][H4]]["nufuz"].length * 2
+							H4++
+						}
+						if(H[L[H2[H1]]["konum"]]["lord"] == "yok"){
+							while((((L[H2[H1]]["para"] > 19) && (Math.floor(H5) > (L[H2[H1]]["birlik"].length + 2) * 2)) && ((L[H2[H1]]["sinir"] > L[H2[H1]]["birlik"].length) && (CB(H[L[H2[H1]]["konum"]]["nufuz"])["cift"] > 1))) && ((L[H2[H1]]["ulke"] == H[L[H2[H1]]["konum"]]["ulke"]) && (H3 > 0))){
+								birlikAl(H2[H1])
+							}
+						}else {
+							if(L[H[L[H2[H1]]["konum"]]["lord"]]["kral"] == L[H2[H1]]["kral"]){
+								while((((L[H2[H1]]["para"] > 19) && (Math.floor(H5) > (L[H2[H1]]["birlik"].length + 2) * 2)) && ((L[H2[H1]]["sinir"] > L[H2[H1]]["birlik"].length) && (CB(H[L[H2[H1]]["konum"]]["nufuz"])["cift"] > 1))) && ((L[H2[H1]]["ulke"] == H[L[H2[H1]]["konum"]]["ulke"]) && (H3 > 0))){
+									birlikAl(H2[H1])
+								}
+							}
+						}
+						
+					}
+					//console.log("bura")
+					//GG
+					if((H3 > 0 && (L[H2[H1]]["para"] > 999 && L[H2[H1]]["sinir"] < 100)) && (L[H2[H1]]["birlik"].length > L[H2[H1]]["sinir"] || L[H2[H1]]["birlik"].length == L[H2[H1]]["sinir"])){
+						GG(H2[H1])
+						H3--
+					}
+					//console.log("bura")
+					//haraket
+					if(!(L[H2[H1]]["topr"].length > (Bsinir + Bsinir) + 1 && (L[H2[H1]]["konum"][1] == L[H2[H1]]["topr"][0][1] && L[H2[H1]]["konum"][0] == L[H2[H1]]["topr"][0][0])) && H3 > 0){
+						if(false/*((H[L[H2[H1]]["konum"]]["lord"] == "yok" && R[H[L[H2[H1]]["konum"]]["ulke"]][3] == "yok") && H[L[H2[H1]]["konum"]]["ulke"] != L[H2[H1]]["ulke"]) && ((((L[H2[H1]]["birlik"].length * 40) + (L[H2[H1]]["birlik"].length * 100)) * 1.2 < (H[L[H2[H1]]["konum"]]["nufuz"].length * 20) + (H[L[H2[H1]]["konum"]]["nufuz"].length * 100)))*/){
+							
+						}else {
+							H4 = EK(L[H2[H1]]["konum"])
+							H5 = 0//[]()
+							while(H4.length != H5){
+								if(H[H4[H5]] == undefined && H4[H5] != undefined){
+									H[H4[H5]] = {
+										"sinir":0,
+										"ad":"yok",
+										"nufuz":[],
+										"ulke":0,
+										"birlikler":[],
+										"lord":"yok"
+									}
+								}
+								H5++
+							}
+							H5 = 0
+							H6 = [
+								[],
+								[],
+								[],
+								[],
+								[]
+							]
+							H10 = undefined
+							while(H4.length != H5){
+								if(H4[H5] != undefined){
+									if(LVY2()){
+										if(H[H4[H5]]["ulke"] == 0){
+											if(CB(L[H2[H1]]["birlik"])["cift"] > 0){
+												H6[3][H6[3].length] = H5
+											}
+										}else {
+											if(H[H4[H5]]["ulke"] != L[H2[H1]]["ulke"]){
+												if(((L[H2[H1]]["birlik"].length * 40) + (L[H2[H1]]["birlik"].length * 100)) * 1.2 > (H[H4[H5]]["nufuz"].length * 20) + (H[H4[H5]]["nufuz"].length * 100) && CB(L[H2[H1]]["birlik"])["cift"] > 0){
+													H6[1][H6[1].length] = H5
+												}
+											}else {
+												if(H[H4[H5]]["lord"] == "yok"){
+													if(R[L[H2[H1]]["ulke"]][3] == "yok"){
+														H6[4][H6[4].length] = H5
+													}else {
+														H6[0][H6[0].length] = H5
+													}
+												}else {
+													if(L[H2[H1]]["kral"] == L[H[H4[H5]]["lord"]]["kral"]){
+														H6[0][H6[0].length] = H5
+													}else {
+														H6[0][H6[0].length]=H5
+													}
+												}
+											}
+										}
+									}else {
+											G1 = 0
+											G2 = []
+											while(RK.length != G1){
+												if(H[RK[G1]]["ulke"] == L[H2[H1]]["ulke"] && H[RK[G1]]["lord"] == "yok"){
+													G2[G2.length] = RK[G1]
+												}
+												G1++
+											}
+											if(G2.length == 0){
+												if(H[H4[H5]]["ulke"] == 0){
+													if(CB(L[H2[H1]]["birlik"])["cift"] > 0){
+														H6[3][H6[3].length] = H5
+													}
+												}else {
+													if(H[H4[H5]]["ulke"] != L[H2[H1]]["ulke"]){
+														if(((L[H2[H1]]["birlik"].length * 40) + (L[H2[H1]]["birlik"].length * 100)) * 1.2 > (H[H4[H5]]["nufuz"].length * 20) + (H[H4[H5]]["nufuz"].length * 100) && CB(L[H2[H1]]["birlik"])["cift"] > 0){
+															H6[1][H6[1].length] = H5
+														}
+													}else {
+														if(H[H4[H5]]["lord"] == "yok"){
+															if(R[L[H2[H1]]["ulke"]][3] == "yok"){
+																H6[4][H6[4].length] = H5
+															}else {
+																H6[0][H6[0].length] = H5
+															}
+														}else {
+															if(L[H2[H1]]["kral"] == L[H[H4[H5]]["lord"]]["kral"]){
+																H6[0][H6[0].length] = H5
+															}else {
+																H6[0][H6[0].length]=H5
+															}
+														}
+													}
+												}
+											}else {
+												if(G2[0][0] > L[H2[H1]]["konum"][0]){
+													if(H[[L[H2[H1]]["konum"][0]+1,L[H2[H1]]["konum"][1]]]["ulke"] == L[H2[H1]]["ulke"]){
+														if(H5 == 0){
+															H6[3][H6[3].length] = H5
+														}
+													}else {
+														if(H5 == 0){
+															H6[2][H6[2].length] = H5
+														}
+													}
+												}
+												if(G2[0][0] < L[H2[H1]]["konum"][0]){
+													if(H[[L[H2[H1]]["konum"][0]-1,L[H2[H1]]["konum"][1]]]["ulke"] == L[H2[H1]]["ulke"]){
+														if(H5 == 1){
+															H6[3][H6[3].length] = H5
+														}
+													}else {
+														if(H5 == 1){
+															H6[2][H6[2].length] = H5
+														}
+													}
+												}
+												if(G2[0][1] > L[H2[H1]]["konum"][1]){
+													if(H[[L[H2[H1]]["konum"][0],L[H2[H1]]["konum"][1]+1]]["ulke"] == L[H2[H1]]["ulke"]){
+														if(H5 == 3){
+															H6[3][H6[3].length] = H5
+														}
+													}else {
+														if(H5 == 3){
+															H6[2][H6[2].length] = H5
+														}
+													}
+												}
+												if(G2[0][1] < L[H2[H1]]["konum"][1]){
+													if(H[[L[H2[H1]]["konum"][0],L[H2[H1]]["konum"][1]-1]]["ulke"] == L[H2[H1]]["ulke"]){
+														if(H5 == 2){
+															H6[3][H6[3].length] = H5
+														}
+													}else {
+														if(H5 == 2){
+															H6[2][H6[2].length] = H5
+														}
+													}
+												}
+											}
+										}
+								}
+								H5++
+							}
+							if(H6[4].length == 0){
+								if(H6[3].length == 0){
+									if(H6[2].length == 0/* || L[H2[H1]]["birlik"].length == 0*/){
+										if(H6[1].length == 0){
+											if(H6[0].length == 0){
+												//dur
+											}else {
+												H10 = H6[0][Math.floor(Math.random() * H6[0].length)]
+											}
+										}else {
+											H10 = H6[1][Math.floor(Math.random() * H6[1].length)]
+										}
+									}else {
+										H10 = H6[2][Math.floor(Math.random() * H6[2].length)]
+									}
+								}else {
+									H10 = H6[3][Math.floor(Math.random() * H6[3].length)]
+								}
+							}else {
+								H10 = H6[4][Math.floor(Math.random() * H6[4].length)]
+							}
+							
+							if(H3 > 0 && H10 != undefined){
+								switch(H10){
+								  case 0:
+									ilerle(0,"+",H2[H1])
+									break;
+								  case 1:
+									ilerle(0,"-",H2[H1])
+									break;
+								  case 2:
+									ilerle(1,'-',H2[H1])
+									break;
+								  case 3:
+									ilerle(1,'+',H2[H1])
+									break;
+								}
+								H3--
+							}
+						}
+					}else {
+						if((L[H2[H1]]["para"] > 999 && H3 > 0) && (H[L[H2[H1]]["konum"]]["lord"] == H2[H1] && H[L[H2[H1]]["konum"]]["sinir"] < 100)){
+							G(H2[H1])
+							H3--
+						}
+					}
+					//console.log("bura")
+				}
+				H1++
+			}
+			localStorage.setItem("KVSL",JSON.stringify(L))
+			localStorage.setItem("KVSH",JSON.stringify(H))
+		}, 3000);//H7);
+		//H7 += 1000
+		H9++
+	}
+	localStorage.setItem("KVSL",JSON.stringify(L))
+	localStorage.setItem("KVSH",JSON.stringify(H))
+	kesif(LN)
+	birlikY()
+	renkkayit()
+	B = false
+}, zaman("yapay zeka"));
+setInterval(function(){//sure
+	if(L[LN]["B"] == true){return LN = LN}
+	if(B){return LN = LN}
+	D["sure"]++
+	document.querySelector('#sure').innerHTML = "oyunu ne kadar oynadin = "+SK()
+	localStorage.setItem("KVSD",JSON.stringify(D))
+}, zaman("sure"));
+setInterval(function(){//D
+	if(L[LN]["B"] == true){return LN = LN}
+	if(B){return LN = LN}
+	if(L.length > D["bas"]["L"]+100){
+		D1 = 0
+		if(D["bas"]["L"] == 0){
+			D1++
+		}
+		
+		D2 = 0+D["bas"]["L"]
+		if(D["bas"]["L"] == 0){
+			D2++
+		}
+		
+		D3 = true
+		
+		while(D2 != (D["bas"]["L"]-D1)+100){
+			if(L[D2] != "yok"){
+				D3 = false
+				D2 = ((D["bas"]["L"]-D1)+100)-1
+			}
+			D2++
+		}
+		
+		if(D3){
+			D["bas"]["L"] += 100
+		}
+	}
+	
+	if(R.length > D["bas"]["R"]+100){
+		D1 = 0
+		if(D["bas"]["R"] == 1){
+			D1 = 1
+		}
+		
+		D2 = 0+D["bas"]["R"]
+		if(D["bas"]["R"] == 1){
+			D2 = 3
+		}
+		
+		D3 = true
+		
+		while(D2 != (D["bas"]["R"]-D1)+100){
+			console.log(R[D2])
+			if(R[D2] != "yok"){
+				D3 = false
+				D2 = ((D["bas"]["R"]-D1)+100)-1
+			}
+			D2++
+		}
+		
+		if(D3){
+			if(D["bas"]["R"] == 1){
+				D["bas"]["R"] = 100
+			}else {
+				D["bas"]["R"] += 100
+			}
+		}
+	}
+	localStorage.setItem("KVSD",JSON.stringify(D))
+}, zaman("D"));
+
+//[]()Math.floor(Math.random() * 2)
+    </script>
+</body>
+</html>

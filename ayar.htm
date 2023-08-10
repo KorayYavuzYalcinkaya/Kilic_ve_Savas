@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ayar</title>
+</head>
+<body style="text-align: center;">
+	<h2>Save</h2>
+	<button onclick="saveA()">save al</button><br>
+	<button onclick="saveY()">save yukle</button><br>
+	<input type="text" id="save"><br><br>
+	<button onclick="sifirla()">sifirla</button>
+	<script>
+		//[]()
+		
+		function sifrele(X1){
+				G1 = 1
+				G2 = -1
+				G3 = ""    
+				
+				while(G1 == 1){
+					G2++
+					G4 = sifre(X1[G2])
+					if(G4 != undefined){
+						G3 += G4
+					}
+					if(X1.length < (G2 - 2)){return G3}
+				}
+			}
+		function sifre(X1){
+			switch(X1){
+				case 'q': return 'ç'; break;
+				case 'w': return 'ö'; break;
+				case 'e': return 'm'; break;
+				case 'r': return 'n'; break;
+				case 't': return 'b'; break;
+				case 'y': return 'v'; break;
+				case 'u': return 'c'; break;
+				case 'ı': return 'x'; break;
+				case 'o': return 'z'; break;
+				case 'p': return 'i'; break;
+				case 'ğ': return 'ş'; break;
+				case 'ü': return 'l'; break;
+				case 'a': return 'k'; break;
+				case 's': return 'j'; break;
+				case 'd': return 'h'; break;
+				case 'f': return 'g'; break;
+				case 'g': return 'f'; break;
+				case 'h': return 'd'; break;
+				case 'j': return 's'; break;
+				case 'k': return 'a'; break;
+				case 'l': return 'ü'; break;
+				case 'ş': return 'ğ'; break;
+				case 'i': return 'p'; break;
+				case 'z': return 'o'; break;
+				case 'x': return 'ı'; break;
+				case 'c': return 'u'; break;
+				case 'v': return 'y'; break;
+				case 'b': return 't'; break;
+				case 'n': return 'r'; break;
+				case 'm': return 'e'; break;
+				case 'ö': return 'w'; break;
+				case 'ç': return 'q'; break;
+				case 'Q': return 'Ç'; break;
+				case 'W': return 'Ö'; break;
+				case 'E': return 'M'; break;
+				case 'R': return 'N'; break;
+				case 'T': return 'B'; break;
+				case 'Y': return 'V'; break;
+				case 'U': return 'C'; break;
+				case 'I': return 'X'; break;
+				case 'O': return 'Z'; break;
+				case 'P': return 'İ'; break;
+				case 'Ğ': return 'Ş'; break;
+				case 'Ü': return 'L'; break;
+				case 'A': return 'K'; break;
+				case 'S': return 'J'; break;
+				case 'D': return 'H'; break;
+				case 'F': return 'G'; break;
+				case 'G': return 'F'; break;
+				case 'H': return 'D'; break;
+				case 'J': return 'S'; break;
+				case 'K': return 'A'; break;
+				case 'L': return 'Ü'; break;
+				case 'Ş': return 'Ğ'; break;
+				case 'İ': return 'P'; break;
+				case 'Z': return 'O'; break;
+				case 'X': return 'I'; break;
+				case 'C': return 'U'; break;
+				case 'V': return 'Y'; break;
+				case 'B': return 'T'; break;
+				case 'N': return 'R'; break;
+				case 'M': return 'E'; break;
+				case 'Ö': return 'W'; break;
+				case 'Ç': return 'Q'; break;
+				case undefined: return ''; break;
+				case "*": return ' '; break;
+				case " ": return '*'; break;
+				case '1': return '9'; break;
+				case '2': return '8'; break;
+				case '3': return '7'; break;
+				case '4': return '6'; break;
+				case '5': return '5'; break;
+				case '6': return '4'; break;
+				case '7': return '3'; break;
+				case '8': return '2'; break;
+				case '9': return '1'; break;
+				case '1': return '9'; break;
+				case '2': return '8'; break;
+				case '3': return '7'; break;
+				case '4': return '6'; break;
+				case '5': return '5'; break;
+				case '6': return '4'; break;
+				case '7': return '3'; break;
+				case '8': return '2'; break;
+				case '9': return '1'; break;
+			}
+			return X1
+		}
+		
+		function saveA(){
+			console.log("0/7");
+			document.querySelector('#save').value = sifrele("localStorage.setItem('KVSL',JSON.stringify("+localStorage.getItem("KVSL")+"));")
+			console.log("1/7");
+			document.querySelector('#save').value += sifrele("localStorage.setItem('KVSR',JSON.stringify("+localStorage.getItem("KVSR")+"));")
+			console.log("2/7");
+			document.querySelector('#save').value += sifrele("localStorage.setItem('KVSD',JSON.stringify("+localStorage.getItem("KVSD")+"));")
+			console.log("4/7");
+			document.querySelector('#save').value += sifrele("localStorage.setItem('KVSH',JSON.stringify("+localStorage.getItem("KVSH")+"));")
+			console.log("5/7");
+			document.querySelector('#save').value += sifrele("localStorage.setItem('KVSP',"+localStorage.getItem("KVSP")+");")
+			console.log("6/7");
+			document.querySelector('#save').value += sifrele("localStorage.setItem('KVSRK',JSON.stringify("+localStorage.getItem("KVSRK")+"));")
+			console.log("7/7");
+		}
+		function saveY(){
+		    alert("basladi")
+			eval(sifrele(document.querySelector('#save').value))
+			alert("sorun yok");
+			document.querySelector('#save').value = ""
+			alert("basrili bir sekilde yuklendi "+JSON.parse(localStorage.getItem("KVSL"))[eval(localStorage.getItem("KVSP"))]["ad"]+"("+eval(localStorage.getItem("KVSP"))+") ile devam edebilirsin")
+		}
+		function sifirla(){
+			localStorage.setItem('KVSL',JSON.stringify([{"konum":[6,6],"birlik":[],"topr":[],"para":0,"sinir":0,"ulke":2,"ad":"Anarsist Kral","yas":[0,99999999999999],"B":false,"kral":0},{"konum":[-4,-4],"birlik":[],"topr":[[-4,-4]],"para":0,"sinir":33,"ulke":1,"ad":"sen","yas":[0,35],"B":false,"kral":1}]));localStorage.setItem('KVSR',JSON.stringify([["white","sahipsiz"],["blue","sen ulke",[1],1],["white","Anarsistler",[0],0],["red","Haydutlar",[],"yok"]]));localStorage.setItem('KVSD',JSON.stringify({"kisi":[],"sure":0,"bas":{"L":0,"R":1},"tarih":{"hersey":["sen ulke(1) 'dan kral sen(1) , Falan Filan(-4,-4) 'a yerlesti (00:00)"],"kisi":[[],["sen ulke(1) 'da kral Falan Filan(-4,-4) 'a yerlesti (00:00)"],[]],"ulke":[[],["kral sen(1) Falan Filan(-4,-4) 'a yerlesti (00:00)"],[],[]],"yerlesim":{"4,4":[],"-4,-4":["sen ulke(1) 'dan kral sen(1) yerlesti (00:00)"]}}}));localStorage.setItem('KVSH',JSON.stringify({"4,4":{"sinir":34,"ad":"Olum Vadisi","nufuz":[{"can":100,"X":"male"},{"can":100,"X":"famale"}],"ulke":3,"birlikler":[],"lord":"yok"},"-4,-4":{"sinir":34,"ad":"Falan Filan","nufuz":[{"can":100,"X":"male"},{"can":100,"X":"famale"}],"ulke":1,"birlikler":[1],"lord":1}}));localStorage.setItem('KVSP',1);localStorage.setItem('KVSRK',JSON.stringify([[4,4],[-4,-4]]));
+		}
+		
+		//[]()
+	</script>
+</body>
+</html>
